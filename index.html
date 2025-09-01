@@ -1,72 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Test the AI Job Agent</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Submit Your CV</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f9f9f9;
-      padding: 40px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #007BFF, #6C63FF);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
     }
-    .container {
-      max-width: 500px;
-      margin: auto;
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    .form-container {
+      background-color: white;
+      padding: 35px 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      max-width: 420px;
+      width: 100%;
+      transition: transform 0.2s ease;
+    }
+    .form-container:hover {
+      transform: translateY(-5px);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    label {
+      font-weight: bold;
+      font-size: 14px;
+      margin-top: 10px;
+      display: block;
+      color: #444;
+    }
+    input, textarea {
+      width: 100%;
+      margin-top: 5px;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      transition: border 0.2s ease;
+    }
+    input:focus, textarea:focus {
+      border-color: #007BFF;
+      box-shadow: 0 0 5px rgba(0,123,255,0.2);
     }
     button {
-      background: #4CAF50;
-      color: white;
-      padding: 12px 20px;
+      width: 100%;
+      margin-top: 15px;
+      padding: 12px;
       border: none;
-      border-radius: 5px;
+      border-radius: 8px;
+      background: #007BFF;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
       cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+    button:hover {
+      background: #0056b3;
+      transform: scale(1.02);
+    }
+    button:disabled {
+      background: #aaa;
+      cursor: not-allowed;
+    }
+    .success-message {
+      color: green;
+      margin-top: 20px;
+      display: none;
+      text-align: center;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>🎯 Test the AI Job Finder</h2>
-    <p>Paste your CV and email below. You’ll get a job list in your inbox.</p>
 
+  <div class="form-container">
+    <h2>📄 Submit Your CV</h2>
     <form id="cvForm">
-      <label for="cv"><strong>Your CV (plain text)</strong></label><br>
-      <textarea id="cv" name="cv" rows="10" style="width:100%; margin-top: 8px;" placeholder="Paste your CV here..." required></textarea><br><br>
+      <label for="email">Email:</label>
+      <input type="email" name="email" required placeholder="Enter your email"/>
 
-      <label for="email"><strong>Your Email</strong></label><br>
-      <input id="email" name="email" type="email" style="width:100%; margin-top: 8px;" placeholder="e.g. yourname@example.com" required><br><br>
+      <label for="cv">Paste Your CV:</label>
+      <textarea name="cv" rows="6" required placeholder="Paste your CV here..."></textarea>
 
-      <button type="submit">📩 Submit</button>
+      <button type="submit" id="submitBtn">Submit</button>
     </form>
-
-    <p id="status" style="margin-top: 20px; font-size: 14px; color: green;"></p>
+    <div class="success-message" id="successMessage">✅ CV submitted successfully!</div>
   </div>
 
   <script>
-    document.getElementById("cvForm").addEventListener("submit", async function(e) {
+    const form = document.getElementById("cvForm");
+    const submitBtn = document.getElementById("submitBtn");
+    const successMessage = document.getElementById("successMessage");
+
+    form.addEventListener("submit", async function(e) {
       e.preventDefault();
+      submitBtn.disabled = true;
+      submitBtn.innerText = "Submitting...";
 
-      const cv = document.getElementById("cv").value;
-      const email = document.getElementById("email").value;
+      const data = {
+        email: form.email.value,
+        cv: form.cv.value
+      };
 
-      const response = await fetch("https://aliveautomations.app.n8n.cloud/webhook/upload-cv", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ cv, email })
-      });
+      try {
+        const res = await fetch("https://ngathosham.app.n8n.cloud/webhook-test/upload-cv", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
 
-      if (response.ok) {
-        window.location.href = "thank-you.html";
-      } else {
-        document.getElementById("status").textContent = "Something went wrong. Try again.";
+        if (res.ok) {
+          form.style.display = "none";
+          successMessage.style.display = "block";
+        } else {
+          alert("❌ Something went wrong. Please try again.");
+          submitBtn.disabled = false;
+          submitBtn.innerText = "Submit";
+        }
+      } catch (err) {
+        console.error(err);
+        alert("⚠️ Network error. Please try again.");
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Submit";
       }
     });
   </script>
+
 </body>
 </html>
