@@ -114,7 +114,7 @@
       };
 
       try {
-        const res = await fetch("http://localhost:5678/webhook-test/upload-cv", {
+        const res = await fetch("https://shammah.app.n8n.cloud/webhook/CV-upload", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data)
